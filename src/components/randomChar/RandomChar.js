@@ -7,7 +7,7 @@ import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
 
 const RandomChar = () => {
-    const [char, setChar] = useState({});
+    const [char, setChar] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
@@ -15,11 +15,16 @@ const RandomChar = () => {
 
     useEffect(() => {
         updateChar();
+        const timerId = setInterval(updateChar, 60000);
+
+        return () => {
+            clearInterval(timerId)
+        }
     }, [])
 
     const onCharLoaded = (char) => {
-        setChar(char);
         setLoading(false);
+        setChar(char);
     }
 
     const onCharLoading = () => {
@@ -27,12 +32,13 @@ const RandomChar = () => {
     }
 
     const onError = () => {
-        setLoading(false);
         setError(true);
+        setLoading(false);
     }
 
     const updateChar = () => {
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
+        onCharLoading();
         marvelService
             .getCharacter(id)
             .then(onCharLoaded)
@@ -42,11 +48,10 @@ const RandomChar = () => {
 
     const errorMessage = error ? <ErrorMessage /> : null;
     const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || error) ? <View char={char} /> : null;
+    const content = !(loading || error || !char) ? <View char={char} /> : null;
 
     return (
         <div className="randomchar">
-            {/* {loading ? <Spinner /> : <View char={char} />} */}
             {errorMessage}
             {spinner}
             {content}
