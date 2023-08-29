@@ -33,4 +33,4 @@ const useMarvelService = () => {
     return { loading, error, getAllCharacters, getCharacter }
 }
 
-export default MarvelService; 
+export default useMarvelService; 
